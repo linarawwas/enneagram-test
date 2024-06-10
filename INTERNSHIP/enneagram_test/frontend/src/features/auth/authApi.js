@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export const fetchAuthenticatedUser = createAsyncThunk(
   "auth/fetchAuthenticatedUser",
@@ -15,7 +16,7 @@ export const fetchAuthenticatedUser = createAsyncThunk(
         "http://localhost:5000/users/me",
         config
       ); // Adjust the URL as needed
-
+      console.log("authenticated user: ", response.data);
       return response.data;
     } catch (error) {
       throw error;

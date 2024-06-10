@@ -5,7 +5,7 @@ function EmployeeRouter() {
   return (
     <div className="userRouter">
       <Routes>
-        <Route index element={<Test />} />
+        <Route  path="/test" element={<Test />} />
         <Route path="/SignIn" element={<SignInSide />} />
       </Routes>
     </div>

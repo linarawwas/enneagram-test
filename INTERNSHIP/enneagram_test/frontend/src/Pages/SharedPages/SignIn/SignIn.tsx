@@ -17,6 +17,8 @@ import { toast, ToastContainer } from "react-toastify";
 import { setUser } from "../../../features/auth/authSlice.js";
 import { fetchAuthenticatedUser } from "../../../features/auth/authApi";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 function Copyright(props: any) {
   return (
     <Typography
@@ -37,10 +39,17 @@ function Copyright(props: any) {
 const defaultTheme = createTheme();
 
 export default function SignInSide() {
+  const [loggedIn, setLoggedIn] = useState(false);
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (loggedIn) {
+      navigate("/test");
+    }
+  }, [loggedIn]);
+
   const dispatch = useDispatch();
 
-  const handleSubmit = async (
-    event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const user = {
@@ -55,9 +64,13 @@ export default function SignInSide() {
       );
       // Save token to local storage
       localStorage.setItem("token", response.data.token);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
       toast.success("Sign in successful!");
       // Fetch user info and update auth state
       await dispatch(fetchAuthenticatedUser());
+      setLoggedIn(!loggedIn);
     } catch (error) {
       toast.error("There was an error signing in!");
       console.error("There was an error signing in!", error);
