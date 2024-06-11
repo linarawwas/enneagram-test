@@ -1,7 +1,7 @@
 // src/components/ButtonAppBar.tsx
 
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   AppBar,
   Box,
@@ -11,7 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { clearUser } from "../../features/auth/authSlice";
+import { clearMe, clearUser } from "../../features/auth/authSlice";
 
 interface State {
   open: boolean;
@@ -38,7 +38,7 @@ const ButtonAppBar: React.FC = () => {
   };
 
   const handleLogout = () => {
-    dispatch(clearUser());
+    dispatch(clearMe());
     navigate("/login");
   };
 

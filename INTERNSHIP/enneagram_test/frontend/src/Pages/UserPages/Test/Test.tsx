@@ -22,6 +22,7 @@ import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import { a11yProps } from "../../../utils.ts";
 import ButtonAppBar from "../../../components/UserComponents/ButtonAppBar.tsx";
 import QuestionCard from "../../../components/UserComponents/QuestionCard.tsx";
+import { fetchAuthenticatedMe } from "../../../features/auth/authApi.js";
 
 const Test: React.FC = () => {
   const dispatch = useDispatch();
@@ -32,6 +33,8 @@ const Test: React.FC = () => {
   const [selectedValue, setSelectedValue] = useState("a");
   const [allQuestionsAnswered, setAllQuestionsAnswered] = useState(false);
   const [showThankYou, setShowThankYou] = useState(false);
+  const [answers, setAnswers] = useState([]); // New state for storing answers
+  const userId = useSelector((state: any) => state.auth.me.id); // Accessing the correct state path
 
   useEffect(() => {
     dispatch(fetchQuestions());
@@ -50,27 +53,42 @@ const Test: React.FC = () => {
     setValue(newValue);
     setCurrentPage(newValue + 1);
   };
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentPage((prevPage) => {
-      const newPage = prevPage + 1;
-      setValue(newPage - 1);
-      return newPage;
+  const handleAnswerChange = (questionId: string, grade: number) => {
+    setAnswers((prevAnswers) => {
+      const newAnswers = [...prevAnswers];
+      const index = newAnswers.findIndex(
+        (answer) => answer.questionId === questionId
+      );
+      if (index !== -1) {
+        newAnswers[index].grade = grade;
+      } else {
+        newAnswers.push({ questionId, grade });
+      }
+      return newAnswers;
     });
-    setSelectedValue(event.target.value);
-  };
 
+    if (currentPage === totalPages) {
+      const result = {
+        userId,
+        answers: [...answers, { questionId, grade }],
+      };
+      console.log(result); // Log the final result object
+      setShowThankYou(true);
+    } else {
+      setCurrentPage(currentPage + 1);
+    }
+  };
   const controlProps = (item: string) => ({
     checked: selectedValue === item,
-    onChange: handleChange,
+    onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
+      const grade = parseInt(event.target.value, 10);
+      handleAnswerChange(questions[currentPage - 1].id, grade);
+      setSelectedValue(event.target.value);
+    },
     value: item,
     name: "size-radio-button-demo",
     inputProps: { "aria-label": item },
   });
-
-  const handleSendClick = () => {
-    setShowThankYou(!showThankYou);
-  };
 
   return (
     <>
@@ -98,13 +116,16 @@ const Test: React.FC = () => {
                       spacing={2}
                       sx={{ py: 5, justifyContent: "center" }}
                     >
-                      <Button variant="outlined" startIcon={<ExitToAppIcon />}>
+                      <Button
+                        variant="outlined"
+                        startIcon={<ExitToAppIcon color="#1976d2" />}
+                      >
                         Quit
                       </Button>
                       <Button
                         variant="contained"
                         endIcon={<SendIcon />}
-                        onClick={handleSendClick}
+                        onClick={() => setShowThankYou(true)}
                       >
                         Send
                       </Button>

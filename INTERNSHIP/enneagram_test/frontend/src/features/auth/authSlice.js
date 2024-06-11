@@ -1,54 +1,54 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { fetchAuthenticatedUser } from './authApi';
+import { createSlice } from "@reduxjs/toolkit";
+import { fetchAuthenticatedMe } from "./authApi";
 
 const initialState = {
-  user: {
+  me: {
     id: null,
-    name: '',
-    email: '',
-    isAdmin: false
+    name: "",
+    email: "",
+    isAdmin: false,
   },
-  isAuthenticated: localStorage.getItem('token') ? true : false,
-  status: 'idle',
+  isAuthenticated: localStorage.getItem("token") ? true : false,
+  status: "idle",
   error: null,
 };
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {
-    setUser(state, action) {
-      state.user = action.payload;
+    setMe(state, action) {
+      state.me = action.payload;
       state.isAuthenticated = true;
     },
-    clearUser(state) {
-      state.user = {
+    clearMe(state) {
+      state.me = {
         id: null,
-        name: '',
-        email: '',
-        isAdmin: false
+        name: "",
+        email: "",
+        isAdmin: false,
       };
       state.isAuthenticated = false;
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchAuthenticatedUser.pending, (state) => {
-        state.status = 'loading';
+      .addCase(fetchAuthenticatedMe.pending, (state) => {
+        state.status = "loading";
       })
-      .addCase(fetchAuthenticatedUser.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        state.user = action.payload; // Update user state with fetched user information
+      .addCase(fetchAuthenticatedMe.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        // state.me = action.payload; // This line is optional now as setMe is already dispatched
         state.isAuthenticated = true;
       })
-      .addCase(fetchAuthenticatedUser.rejected, (state, action) => {
-        state.status = 'failed';
+      .addCase(fetchAuthenticatedMe.rejected, (state, action) => {
+        state.status = "failed";
         state.error = action.error.message;
         state.isAuthenticated = false;
       });
   },
 });
 
-export const { setUser, clearUser } = authSlice.actions;
+export const { setMe, clearMe } = authSlice.actions;
 
 export default authSlice.reducer;

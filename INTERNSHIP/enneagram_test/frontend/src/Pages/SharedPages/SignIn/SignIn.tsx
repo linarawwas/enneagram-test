@@ -15,7 +15,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import { setUser } from "../../../features/auth/authSlice.js";
-import { fetchAuthenticatedUser } from "../../../features/auth/authApi";
+import { fetchAuthenticatedMe } from "../../../features/auth/authApi";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -69,7 +69,6 @@ export default function SignInSide() {
       }, 1000);
       toast.success("Sign in successful!");
       // Fetch user info and update auth state
-      await dispatch(fetchAuthenticatedUser());
       setLoggedIn(!loggedIn);
     } catch (error) {
       toast.error("There was an error signing in!");
