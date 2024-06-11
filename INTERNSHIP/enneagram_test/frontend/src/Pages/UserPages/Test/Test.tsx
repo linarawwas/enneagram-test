@@ -22,6 +22,8 @@ import ButtonAppBar from "../../../components/UserComponents/ButtonAppBar.tsx"; 
 import QuestionCard from "../../../components/UserComponents/QuestionCard.tsx"; // Importing custom QuestionCard component
 import { postAnswers } from "../../../features/answers/answersApi.js";
 import { ToastContainer } from "react-toastify";
+import { clearMe } from "../../../features/auth/authSlice.js";
+import { useNavigate } from "react-router-dom";
 
 // Define the Test component
 const Test: React.FC = () => {
@@ -29,7 +31,7 @@ const Test: React.FC = () => {
   const dispatch = useDispatch(); // Access Redux dispatch function
   const questions = useSelector((state: any) => state.questions.questions); // Access questions state from Redux store
   const totalPages = Math.ceil(questions.length / 1); // Calculate total pages based on the number of questions (assuming 1 question per page)
-
+  const navigate = useNavigate();
   // State variables using React hooks
   const [currentPage, setCurrentPage] = useState(1); // State variable for current page, initialized to 1
   const [value, setValue] = useState(1); // State variable for tab value, initialized to 1
@@ -152,6 +154,10 @@ const Test: React.FC = () => {
                       <Button
                         variant="outlined"
                         startIcon={<ExitToAppIcon color="#1976d2" />}
+                        onClick={() => {
+                          dispatch(clearMe());
+                          navigate("/login");
+                        }}
                       >
                         Quit
                       </Button>
