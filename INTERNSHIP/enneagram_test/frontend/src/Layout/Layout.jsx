@@ -1,9 +1,9 @@
-import React, { useLayoutEffect } from "react";
+import React from "react";
 import AdminRouter from "../Router/AdminRouter";
-import EmployeeRouter from "../Router/EmployeeRouter";
+import Test from "../Pages/EmployeePages/EmployeeLandingPage/Test.tsx";
 function Layout() {
   let is_admin = false;
-  return <>{is_admin ? <AdminRouter /> : <EmployeeRouter />}</>;
+  return <>{is_admin ? <AdminRouter /> : <Test />}</>;
 }
 
 export default Layout;
