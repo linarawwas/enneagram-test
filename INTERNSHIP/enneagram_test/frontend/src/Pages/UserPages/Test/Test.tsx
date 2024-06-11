@@ -24,6 +24,7 @@ import { postAnswers } from "../../../features/answers/answersApi.js";
 import { ToastContainer } from "react-toastify";
 import { clearMe } from "../../../features/auth/authSlice.js";
 import { useNavigate } from "react-router-dom";
+import { all } from "axios";
 
 // Define the Test component
 const Test: React.FC = () => {
@@ -49,12 +50,22 @@ const Test: React.FC = () => {
   // Effect hook to update value and allQuestionsAnswered state when currentPage or totalPages change
   useEffect(() => {
     setValue(currentPage - 1); // Update tab value based on current page
-    if (currentPage === totalPages) {
-      setAllQuestionsAnswered(true); // Set allQuestionsAnswered to true if currentPage exceeds totalPages
+    if (answers.length === questions.length) {
+      console.log(answers.length);
+      console.log(questions.length);
+      console.log("show thank you: ", showThankYou);
+      console.log(
+        "all questions answered? ",
+        allQuestionsAnswered,
+        "and current page: ",
+        currentPage
+      );
+      setAllQuestionsAnswered(!allQuestionsAnswered); // Set allQuestionsAnswered to true if currentPage exceeds totalPages
+      console.log(allQuestionsAnswered);
     } else {
       setAllQuestionsAnswered(false); // Reset allQuestionsAnswered to false otherwise
     }
-  }, [currentPage, totalPages]); // Dependencies array to trigger effect on currentPage or totalPages change
+  }, [answers.length, currentPage, questions.length]); // Dependencies array to trigger effect on currentPage or totalPages change
 
   // Handler function to change the active tab in the pagination
   const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
@@ -82,12 +93,16 @@ const Test: React.FC = () => {
       answers: [...answers, { questionId, grade }],
     };
     // Check if the current page is the last page after updating answers
-    if (currentPage === totalPages) {
+    if (answers.length === questions.length) {
       // Log the final result object with the updated answers
-
+      console.log(
+        "current page and questions length: ",
+        currentPage,
+        " & ",
+        questions.length
+      );
       console.log(result);
-      // Update showThankYou state to display the thank you message
-      setShowThankYou(true);
+      setAllQuestionsAnswered(true);
     } else {
       // Move to the next page if it's not the last page
       setCurrentPage(currentPage + 1);
@@ -113,6 +128,7 @@ const Test: React.FC = () => {
       userId,
       answers,
     };
+    console.log("successfully posted these: ", payload);
     dispatch(postAnswers(payload)); // Dispatch the thunk action with payload
   };
 
@@ -133,7 +149,7 @@ const Test: React.FC = () => {
         }}
       >
         {/* Conditional rendering based on whether all questions are answered */}
-        {allQuestionsAnswered ? (
+        {allQuestionsAnswered && (
           <Card>
             {/* Card to display the final message */}
             <CardActionArea
@@ -182,8 +198,8 @@ const Test: React.FC = () => {
               </CardContent>
             </CardActionArea>
           </Card>
-        ) : (
-          // Render the question cards if all questions are not answered
+        )}
+        {!allQuestionsAnswered &&
           questions
             .slice((currentPage - 1) * 1, currentPage * 1)
             .map((question: any) => (
@@ -193,8 +209,7 @@ const Test: React.FC = () => {
                 currentPage={currentPage}
                 controlProps={controlProps}
               />
-            ))
-        )}
+            ))}
       </Container>
       {/* Container to hold the pagination tabs */}
       <Box
