@@ -11,14 +11,21 @@ import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
+import DeleteIcon from "@mui/icons-material/Delete";
+import SendIcon from "@mui/icons-material/Send";
+import Stack from "@mui/material/Stack";
 import { useNavigate } from "react-router-dom";
 import { clearUser } from "../../../features/auth/authSlice.js";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import { ArrowBack, ArrowForward } from "@mui/icons-material";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import Snackbar, { SnackbarOrigin } from "@mui/material/Snackbar";
 
+interface State extends SnackbarOrigin {
+  open: boolean;
+  vertical: "top" | "bottom";
+  horizontal: "left" | "center" | "right";
+}
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
@@ -58,68 +65,72 @@ function ButtonAppBar() {
     navigate("/login");
     // Add your navigation logic here
   };
+  const [state, setState] = useState<State>({
+    open: true,
+    vertical: "bottom",
+    horizontal: "right",
+  });
+  const { vertical, horizontal, open } = state;
+
+  const handleClick = (newState: SnackbarOrigin) => () => {
+    setState({ ...newState, open: true });
+  };
+
+  const handleClose = () => {
+    setState({ ...state, open: false });
+  };
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{ flexGrow: 1, marginBottom: 5 }}>
       <AppBar position="static">
         <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            your personality test
+            Enneagram Test
           </Typography>
-          <Button color="inherit" onClick={handleLogout}>
-            Logout
-          </Button>
+          <Box sx={{ display: "flex" }}>
+             <Button
+              onClick={handleClick({ vertical: "top", horizontal: "left" })}
+              style={{ backgroundColor: "white" }}
+            >
+              Hint
+            </Button>
+            <Snackbar
+              anchorOrigin={{ vertical, horizontal }}
+              open={open}
+              onClose={handleClose}
+              message="The bigger the size of the circle, the more you agree :)"
+              key={vertical + horizontal}
+            />
+            <Button color="inherit" onClick={handleLogout}>
+              Logout
+            </Button>
+          </Box>
         </Toolbar>
       </AppBar>
     </Box>
   );
 }
-
 const Test: React.FC = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const questions = useSelector((state: any) => state.questions.questions);
   const totalPages = Math.ceil(questions.length / 1); // Assuming 1 question per page
   const [currentPage, setCurrentPage] = useState(1);
   const [value, setValue] = useState(0);
   const [selectedValue, setSelectedValue] = useState("a");
-  const [visibleTabs, setVisibleTabs] = useState({ start: 0, end: 20 });
+  const [allQuestionsAnswered, setAllQuestionsAnswered] = useState(false);
+  const [showThankYou, setShowThankYou] = useState(false);
 
   useEffect(() => {
     dispatch(fetchQuestions());
   }, [dispatch]);
 
   useEffect(() => {
-    if (currentPage > visibleTabs.end) {
-      setVisibleTabs((prev) => ({
-        start: prev.start + 1,
-        end: prev.end + 1,
-      }));
-    } else if (currentPage < visibleTabs.start + 1) {
-      setVisibleTabs((prev) => ({
-        start: Math.max(prev.start - 1, 0),
-        end: Math.max(prev.end - 1, 20),
-      }));
+    setValue(currentPage - 1);
+    if (currentPage === totalPages + 1) {
+      setAllQuestionsAnswered(true);
+    } else {
+      setAllQuestionsAnswered(false);
     }
-  }, [currentPage, visibleTabs]);
-  const handlePageChange = (
-    event: React.ChangeEvent<unknown>,
-    page: number
-  ) => {
-    if (page === 40) {
-      navigate("/login");
-    }
-    setCurrentPage(page);
-    setValue(page - 1);
-  };
+  }, [currentPage, totalPages]);
 
   const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -147,54 +158,129 @@ const Test: React.FC = () => {
     id: `simple-tab-${index}`,
     "aria-controls": `simple-tabpanel-${index}`,
   });
-
-  const handleScrollLeft = () => {
-    setVisibleTabs((prev) => ({
-      start: Math.max(prev.start - 1, -1),
-      end: Math.max(prev.end - 1, 20),
-    }));
+  const handleSendClick = () => {
+    setShowThankYou(!showThankYou);
   };
-
-  const handleScrollRight = () => {
-    setVisibleTabs((prev) => ({
-      start: Math.min(prev.start + 1, totalPages),
-      end: Math.min(prev.end + 1, totalPages),
-    }));
-  };
-
   return (
     <>
+      <ButtonAppBar />
       <CssBaseline />
-      <Container maxWidth="sm">
-        {questions
-          .slice((currentPage - 1) * 1, currentPage * 1)
-          .map((question) => (
-            <Card sx={{ maxWidth: 650, margin: 10 }} key={question.id}>
-              <CardActionArea>
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
-                    Question {currentPage}
+      <Container
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignContent: "center",
+          alignItems: "center",
+        }}
+      >
+        {allQuestionsAnswered ? (
+          <Card>
+            <CardActionArea
+              sx={{ width: "fit-content", height: "60vh", marginTop: "1" }}
+            >
+              <CardContent>
+                {!showThankYou && (
+                  <Typography variant="h3" gutterBottom>
+                    Congrats! You have answered all questions. <br />
+                    <Stack
+                      direction="row"
+                      spacing={2}
+                      sx={{ py: 5, justifyContent: "center" }}
+                    >
+                      <Button
+                        variant="outlined"
+                        startIcon={<ExitToAppIcon color="#1976d2" />}
+                      >
+                        Quit
+                      </Button>
+                      <Button
+                        variant="contained"
+                        endIcon={<SendIcon />}
+                        onClick={handleSendClick}
+                      >
+                        Send
+                      </Button>
+                    </Stack>
                   </Typography>
-                  <Typography variant="h3" color="text.secondary">
-                    {question.text}
+                )}
+                {showThankYou && (
+                  <Typography variant="h4" gutterBottom>
+                    Thank you for taking our enneagram test. <br />
+                    We hope you had a wonderful experience.
                   </Typography>
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          ))}
-        <div style={{ textAlign: "center" }}>
-          <Radio {...controlProps("a")} size="small" />
-          <Radio {...controlProps("b")} />
-          <Radio {...controlProps("d")} />
-          <Radio
-            {...controlProps("c")}
-            sx={{
-              "& .MuiSvgIcon-root": {
-                fontSize: 28,
-              },
-            }}
-          />
-        </div>
+                )}
+              </CardContent>
+            </CardActionArea>
+          </Card>
+        ) : (
+          questions
+            .slice((currentPage - 1) * 1, currentPage * 1)
+            .map((question) => (
+              <Card key={question.id}>
+                <CardActionArea
+                  sx={{ width: "fit-content", height: "60vh", marginTop: "1" }}
+                >
+                  <CardContent>
+                    <Typography
+                      gutterBottom
+                      variant="h4"
+                      component="div"
+                      sx={{ textAlign: "center" }}
+                    >
+                      Question {currentPage}
+                    </Typography>
+                    <Typography
+                      variant="h4"
+                      color="text.secondary"
+                      sx={{ py: 5 }}
+                    >
+                      {question.text}
+                    </Typography>
+                  </CardContent>
+                  <div
+                    style={{
+                      textAlign: "center",
+                      marginTop: "5vh",
+                      marginBottom: "2vh",
+                    }}
+                  >
+                    <Radio
+                      {...controlProps("a")}
+                      sx={{
+                        "& .MuiSvgIcon-root": {
+                          fontSize: 20,
+                        },
+                      }}
+                    />
+                    <Radio
+                      {...controlProps("b")}
+                      sx={{
+                        "& .MuiSvgIcon-root": {
+                          fontSize: 25,
+                        },
+                      }}
+                    />
+                    <Radio
+                      {...controlProps("d")}
+                      sx={{
+                        "& .MuiSvgIcon-root": {
+                          fontSize: 30,
+                        },
+                      }}
+                    />
+                    <Radio
+                      {...controlProps("c")}
+                      sx={{
+                        "& .MuiSvgIcon-root": {
+                          fontSize: 35,
+                        },
+                      }}
+                    />
+                  </div>
+                </CardActionArea>
+              </Card>
+            ))
+        )}
       </Container>
       <Box
         sx={{
@@ -205,37 +291,18 @@ const Test: React.FC = () => {
           width: "100%",
         }}
       >
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <IconButton
-            onClick={handleScrollLeft}
-            disabled={visibleTabs.start === 0}
-          >
-            <ArrowBack />
-          </IconButton>
-          <IconButton
-            onClick={handleScrollRight}
-            disabled={visibleTabs.end >= totalPages}
-          >
-            <ArrowForward />
-          </IconButton>
-        </div>
-
         <Tabs
           value={value}
           onChange={handleChangeTab}
           aria-label="basic tabs example"
+          variant="scrollable"
+          scrollButtons="auto"
         >
           {Array.from({ length: totalPages }, (_, index) => (
             <Tab
               key={index}
-              label={`Item ${index + 1}`}
+              label={`${index + 1}`}
               {...a11yProps(index)}
-              style={{
-                display:
-                  index >= visibleTabs.start && index < visibleTabs.end
-                    ? "block"
-                    : "none",
-              }}
             />
           ))}
         </Tabs>

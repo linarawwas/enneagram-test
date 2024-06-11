@@ -129,9 +129,6 @@ export default function SignInSide() {
               alignItems: "center",
             }}
           >
-            <Avatar sx={{ m: 1, bgcolor: "secondary" }}>
-              <TungstenOutlinedIcon />
-            </Avatar>
             <Typography component="h1" variant="h5">
               To Take Our Personality Test, Please Sign In{" "}
             </Typography>
