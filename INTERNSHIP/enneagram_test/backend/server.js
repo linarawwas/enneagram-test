@@ -12,17 +12,24 @@ const morgan = require("morgan");
 const rfs = require("rotating-file-stream");
 const moment = require("moment-timezone");
 
-const allowedOrigins = ["http://localhost:3000","http://localhost:3001"];
-
+const allowedOrigins = [
+  "http://localhost:3000", 
+  "http://localhost:3001", 
+  "http://192.168.1.13:3000"
+];
 const corsOptions = {
   origin: function (origin, callback) {
+    console.log(`Origin: ${origin}`); // Log the origin
     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
+      console.log(`Origin not allowed by CORS: ${origin}`);
       callback(new Error("Not allowed by CORS"));
     }
   },
-  optionsSuccessStatus: 200, // For legacy browser support
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true,
+  optionsSuccessStatus: 204,
 };
 const myTimeZone = "Asia/Beirut";
 

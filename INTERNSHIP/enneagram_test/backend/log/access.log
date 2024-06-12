@@ -16867,3 +16867,8 @@
 2024-06-12 18:20:47 GET /answers 304 Not Modified
 2024-06-12 18:20:47 GET /answers 304 Not Modified
 2024-06-12 18:20:47 GET /answers 304 Not Modified
+2024-06-12 18:33:06 POST /auth/login 200 OK
+2024-06-12 18:33:06 GET /questions 200 OK
+2024-06-12 18:33:06 GET /users/me 200 OK
+2024-06-12 18:33:06 GET /questions 304 Not Modified
+2024-06-12 18:33:06 GET /users/me 304 Not Modified
