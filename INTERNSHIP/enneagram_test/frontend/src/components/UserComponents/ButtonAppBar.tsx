@@ -77,7 +77,7 @@ const ButtonAppBar: React.FC = () => {
               anchorOrigin={{ vertical, horizontal }}
               open={open}
               onClose={handleClose}
-              message="The bigger the size of the circle, the more you agree :)"
+              message="check green to agree, red to disagree, and the bigger the size, the stronger your stance is!"
               key={vertical + horizontal}
             />
             {/* Logout button */}
