@@ -1,4 +1,4 @@
-const { User } = require('../models');
+const { User } = require("../models");
 
 // Get all users
 exports.getAllUsers = async (req, res) => {
@@ -7,6 +7,18 @@ exports.getAllUsers = async (req, res) => {
     res.status(200).json(users);
   } catch (error) {
     res.status(400).json({ error: error.message });
+  }
+};
+exports.getNonAdminUsers = async (req, res) => {
+  try {
+    const users = await User.findAll({
+      where: {
+        isAdmin: false,
+      },
+    });
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to retrieve users" });
   }
 };
 exports.getUserInfo = (req, res) => {
@@ -31,7 +43,7 @@ exports.getUserById = async (req, res) => {
     if (user) {
       res.status(200).json(user);
     } else {
-      res.status(404).json({ error: 'User not found' });
+      res.status(404).json({ error: "User not found" });
     }
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -48,7 +60,7 @@ exports.updateUser = async (req, res) => {
       const updatedUser = await User.findByPk(req.params.id);
       res.status(200).json(updatedUser);
     } else {
-      res.status(404).json({ error: 'User not found' });
+      res.status(404).json({ error: "User not found" });
     }
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -64,7 +76,7 @@ exports.deleteUser = async (req, res) => {
     if (deleted) {
       res.status(204).send();
     } else {
-      res.status(404).json({ error: 'User not found' });
+      res.status(404).json({ error: "User not found" });
     }
   } catch (error) {
     res.status(400).json({ error: error.message });

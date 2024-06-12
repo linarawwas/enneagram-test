@@ -30,6 +30,7 @@ exports.login = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 exports.register = async (req, res) => {
   try {
     const { name, email, password, isAdmin } = req.body;
@@ -42,6 +43,7 @@ exports.register = async (req, res) => {
     if (existingUser) {
       return res.status(400).json({ error: "Email already registered" });
     }
+
     // Create a new user
     const newUser = new User({
       name,
@@ -50,10 +52,26 @@ exports.register = async (req, res) => {
       isAdmin,
     });
 
+    // Save the new user
     await newUser.save();
-    // Send the token and user data in the response
-    res.status(201).json({ newUser });
+    // Generate JWT token
+    const token = jwt.sign({ userId: newUser.id }, process.env.JWT_SECRET, {
+      expiresIn: "24h",
+    });
+
+    res.json({ token });
+
+    // Send a success response with the token and user data
+    // res.status(201).json({ success: true, message: "User registered successfully", token: token });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    // Handle different types of errors
+    if (error.name === "ValidationError") {
+      // Handle validation errors (e.g., required fields missing)
+      return res.status(400).json({ error: error.message });
+    } else {
+      // Handle unexpected errors
+      console.error("Error registering user:", error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
   }
 };

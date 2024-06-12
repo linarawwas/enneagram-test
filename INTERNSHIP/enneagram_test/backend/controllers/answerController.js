@@ -96,3 +96,19 @@ exports.createManyAnswers = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+exports.deleteAllAnswers = async (req, res) => {
+  try {
+    await Answer.destroy({
+      where: {},
+      truncate: true,
+    });
+    res
+      .status(200)
+      .json({ message: "All answers have been deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting answers:", error);
+    res
+      .status(500)
+      .json({ message: "Failed to delete answers", error: error.message });
+  }
+};
