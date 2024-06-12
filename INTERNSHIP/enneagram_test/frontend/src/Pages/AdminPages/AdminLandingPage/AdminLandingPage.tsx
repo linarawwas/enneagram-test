@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
-import "./LandingPage.css";
+import ButtonAppBar from "../../../components/UserComponents/ButtonAppBar.tsx";
 const AdminLandingPage: React.FC = () => {
   return (
-    <div className="landing-page">
+    <>
+      {" "}
+      <ButtonAppBar />
       <div className="hero-section">
-        <h1>Welcome to TRX</h1>
-        <p>A powerful inventory management system</p>
+        <h1>Welcome to the Admin Dashboard</h1>
       </div>
       <div className="footer">
-        <p>&copy; 2023 TRX by Lina Rawas. All Rights Reserved.</p>
+        <p>&copy; 2024 by Lina Rawas. All Rights Reserved.</p>
       </div>
-    </div>
+    </>
   );
 };
 

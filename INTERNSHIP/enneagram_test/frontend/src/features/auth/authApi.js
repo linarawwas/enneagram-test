@@ -1,22 +1,24 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { setMe } from "./authSlice";
+import { setMe, clearMe } from "./authSlice"; // Adjust import to match your structure
 
 export const fetchAuthenticatedMe = createAsyncThunk(
   "auth/fetchAuthenticatedMe",
-  async (_, { dispatch }) => {
+  async (_, { dispatch, rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token"); // Retrieve the token from local storage
+      const token = localStorage.getItem("token");
+      if (!token) return rejectWithValue('No token found');
       const config = {
         headers: {
-          Authorization: `Bearer ${token}`, // Include token in the authorization header
+          Authorization: `Bearer ${token}`,
         },
       };
-      const response = await axios.get("http://localhost:5000/users/me", config); // Adjust the URL as needed
-      dispatch(setMe(response.data)); // Dispatch setMe with the fetched data
-      return response.data; // Pass the fetched data as the fulfilled action's payload
+      const response = await axios.get("http://localhost:5000/users/me", config);
+      dispatch(setMe(response.data));
+      return response.data;
     } catch (error) {
-      throw error;
+      dispatch(clearMe());
+      return rejectWithValue(error.response?.data || error.message);
     }
   }
 );

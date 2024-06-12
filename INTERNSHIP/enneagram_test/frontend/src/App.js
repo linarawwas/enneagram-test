@@ -4,21 +4,37 @@ import {
   Routes,
   Navigate,
 } from "react-router-dom";
-import { useSelector } from "react-redux"; // Import useSelector from react-redux
+import { useDispatch, useSelector } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
-import SignInSide from "./Pages/SharedPages/SignIn/SignIn.tsx";
 import Layout from "./Layout/Layout.jsx";
+import AuthenticateUser from "./Pages/SharedPages/AuthenticateUser/AuthenticateUser.tsx";
+import { checkAuthToken } from "./features/auth/authSlice";
+import { useEffect } from "react";
+import { fetchAuthenticatedMe } from "./features/auth/authApi.js";
+
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(checkAuthToken());
+    dispatch(fetchAuthenticatedMe());
+  }, [dispatch]);
+
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
   return (
     <Router>
       <Routes>
-        <Route path="/signIn" element={<SignInSide />} />
         <Route
-          path="/*"
-          element={isAuthenticated ? <Layout /> : <Navigate to="/signIn" />}
+          path="/*" 
+          element={
+            isAuthenticated ? <Layout /> : <Navigate to="/authenticateUser" />
+          }
+        />
+        <Route
+          path="/authenticateUser"
+          element={!isAuthenticated ? <AuthenticateUser /> : <Layout />}
         />
       </Routes>
     </Router>

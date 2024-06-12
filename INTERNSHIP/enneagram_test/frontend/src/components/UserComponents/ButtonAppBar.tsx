@@ -23,7 +23,7 @@ interface State {
 /**
  * A component representing the application's top app bar.
  * Displays the app title, a hint button, and a logout button.
- * 
+ *
  * @returns {JSX.Element} - JSX for the ButtonAppBar component.
  */
 const ButtonAppBar: React.FC = () => {
@@ -51,7 +51,9 @@ const ButtonAppBar: React.FC = () => {
   // Function to handle logout action
   const handleLogout = () => {
     dispatch(clearMe()); // Dispatch clearMe action to clear user info
-    navigate("/login"); // Navigate to the login page
+    // setTimeout(() => {
+    //   window.location.reload();
+    // }, 1000); logged out sucessfully without reload
   };
 
   return (
