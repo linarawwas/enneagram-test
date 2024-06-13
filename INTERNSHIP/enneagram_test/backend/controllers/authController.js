@@ -1,8 +1,67 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const { Op } = require("sequelize");
 const { User } = require("../models"); // Assuming your user model is imported like this
 // Get JWT secret key from environment variables
 const secretKey = process.env.JWT_SECRET;
+
+exports.loginAdmin = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Check if the email exists in the database
+    const user = await User.findOne({
+      where: {
+        email: { [Op.eq]: email },
+      },
+    });
+
+    if (!user) {
+      return res.status(401).json({
+        message: "Authentication failed. User not found.",
+        error: "No user exists with the provided email.",
+      });
+    }
+
+    // Check if the password matches
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(401).json({
+        message: "Authentication failed. Wrong password.",
+        error: "The provided password does not match our records.",
+      });
+    }
+
+    // Check if the user is an admin
+    if (!user.isAdmin) {
+      return res.status(403).json({
+        message: "Access denied. Not an admin.",
+        error: "The user does not have admin privileges.",
+      });
+    }
+
+    // Generate a JWT token
+    const token = jwt.sign(
+      { userId: user.id, email: user.email, isAdmin: user.isAdmin },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    // Respond with the generated token and success message
+    res.status(200).json({ token, message: "Login successful" });
+  } catch (error) {
+    // Log the error for debugging purposes
+    console.error("Error during admin login:", error);
+
+    // Send a detailed error response
+    res.status(500).json({
+      message: "An error occurred during login. Please try again later.",
+      error: error.message,
+      stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
+    });
+  }
+};
 exports.login = async (req, res) => {
   const { email, password } = req.body;
 

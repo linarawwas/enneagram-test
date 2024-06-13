@@ -4,7 +4,10 @@ const answerController = require("../controllers/answerController");
 
 // Create a new answer
 router.post("/", answerController.createAnswer);
+
 router.post("/many", answerController.createManyAnswers);
+
+router.get("/user/:userId", answerController.getAnswersByUserId);
 
 // Get all categories
 router.get("/", answerController.getAllAnswers);

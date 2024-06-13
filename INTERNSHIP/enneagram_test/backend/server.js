@@ -13,9 +13,10 @@ const rfs = require("rotating-file-stream");
 const moment = require("moment-timezone");
 
 const allowedOrigins = [
-  "http://localhost:3000", 
-  "http://localhost:3001", 
-  "http://192.168.1.13:3000"
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "http://192.168.1.13:3000",
+  "http://192.168.1.13:3001",
 ];
 const corsOptions = {
   origin: function (origin, callback) {
@@ -59,7 +60,7 @@ app.use(
 );
 app.use(
   cors({
-    origin: ["http://localhost:3000","http://localhost:3001"], // Allow requests from this origin
+    origin: ["http://localhost:3000", "http://localhost:3001"], // Allow requests from this origin
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE", // Allow specified HTTP methods
     credentials: true, // Allow including cookies and HTTP authentication
     optionsSuccessStatus: 204, // Set the status code for successful preflight requests

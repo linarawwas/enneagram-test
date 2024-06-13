@@ -1,4 +1,49 @@
-const { Answer } = require("../models");
+// controllers/answerController.js
+const { Op } = require('sequelize');
+const {Answer} = require('../models');
+const {Question} = require('../models');
+const {Category} = require('../models');
+
+exports.getAnswersByUserId = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const answers = await Answer.findAll({
+      where: { userId },
+      include: [
+        {
+          model: Question,
+          as: 'question',
+          include: [
+            {
+              model: Category,
+              as: 'category',
+            },
+          ],
+        },
+      ],
+    });
+
+    const groupedAnswers = {};
+
+    answers.forEach((answer) => {
+      const category = answer.question.category.name;
+      const questionText = answer.question.text;
+      const grade = answer.grade;
+
+      if (!groupedAnswers[category]) {
+        groupedAnswers[category] = [];
+      }
+
+      groupedAnswers[category].push({ questionText, grade });
+    });
+
+    res.status(200).json(groupedAnswers);
+  } catch (error) {
+    console.error("Error fetching answers by user ID:", error);
+    res.status(500).json({ message: "An error occurred. Please try again." });
+  }
+};
 
 // Create a new answer
 exports.createAnswer = async (req, res) => {
