@@ -6,7 +6,6 @@ import {
   Radio,
   Typography,
 } from "@mui/material";
-import { pink } from "@mui/material/colors";
 
 /**
  * Props for the QuestionCard component.
@@ -31,9 +30,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
 }) => {
   return (
     <Card>
-      <CardActionArea
-        sx={{ width: "65vw", height: "60vh", marginTop: "1" }}
-      >
+      <CardActionArea sx={{ width: "65vw", height: "60vh", marginTop: "1" }}>
         <CardContent>
           {/* Display question number */}
           <Typography
@@ -45,7 +42,11 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
             Question {currentPage}
           </Typography>
           {/* Display question text */}
-          <Typography variant="h5" color="text.secondary" sx={{ py: 5, textAlign:'center' }}>
+          <Typography
+            variant="h5"
+            color="text.secondary"
+            sx={{ py: 5, textAlign: "center" }}
+          >
             {question.text}
           </Typography>
         </CardContent>
@@ -61,6 +62,9 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
               "&.Mui-checked": {
                 color: "#b0201f",
               },
+              "&:hover": {
+                bgcolor: "#b0201f",
+              },
             }} // Custom styling for radio icon
           />
           <Radio
@@ -70,6 +74,9 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
               color: "#b0201f",
               "&.Mui-checked": {
                 color: "#b0201f",
+              },
+              "&:hover": {
+                bgcolor: "#b0201f",
               },
             }} // Custom styling for radio icon
           />
@@ -81,6 +88,9 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
               "&.Mui-checked": {
                 color: "#34b020",
               },
+              "&:hover": {
+                bgcolor: "#34b020",
+              },
             }} // Custom styling for radio icon
           />
           <Radio
@@ -90,6 +100,9 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
               color: "#34b020",
               "&.Mui-checked": {
                 color: "#34b020",
+              },
+              "&:hover": {
+                bgcolor: "#34b020",
               },
             }} // Custom styling for radio icon
           />

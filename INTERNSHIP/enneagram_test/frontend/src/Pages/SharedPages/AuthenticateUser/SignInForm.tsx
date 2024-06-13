@@ -75,9 +75,13 @@ export default function SignInForm() {
       </Button>
       <Grid container>
         <Grid item xs>
-          <Link href="#" variant="body2">
-            Forgot password?
-          </Link>
+        <Button
+            onClick={() => {
+              window.location.href = "http://localhost:3001/login";
+            }}
+          >
+            Are you an admin? go to admin dashboard
+          </Button>
         </Grid>
       </Grid>
       <Copyright sx={{ mt: 5 }} />
