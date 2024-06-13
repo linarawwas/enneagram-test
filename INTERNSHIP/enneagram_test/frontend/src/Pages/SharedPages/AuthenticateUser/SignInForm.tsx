@@ -13,6 +13,7 @@ import Copyright from "./Copyright.tsx";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { checkAuthToken } from "../../../features/auth/authSlice.js";
+import { fetchAuthenticatedMe } from "../../../features/auth/authApi.js";
 export default function SignInForm() {
   let success = false;
   const navigate = useNavigate();
